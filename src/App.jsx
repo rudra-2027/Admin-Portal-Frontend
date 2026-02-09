@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './components/ui/Toast';
 import ProtectedRoute from './components/ProtectedRoute';
+import GuestRoute from './components/GuestRoute';
 import Navbar from './components/layout/Navbar';
 import Sidebar from './components/layout/Sidebar';
 import AdminLayout from './components/layout/AdminLayout';
@@ -34,7 +35,14 @@ const App = () => {
         <div className="min-h-screen bg-primary">
           <Routes>
             {/* Public Routes */}
-            <Route path="/login" element={<Login />} />
+            <Route
+              path="/login"
+              element={
+                <GuestRoute>
+                  <Login />
+                </GuestRoute>
+              }
+            />
 
             <Route path="/" element={<><Navbar /><Home /></>} />
             <Route path="/components" element={<><Navbar /><ComponentList /></>} />
