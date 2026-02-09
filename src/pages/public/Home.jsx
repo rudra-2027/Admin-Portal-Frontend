@@ -7,19 +7,28 @@ import { FiSearch, FiLayers, FiZap, FiGithub, FiArrowRight, FiActivity, FiPlus }
 import { motion } from 'framer-motion';
 
 const Home = () => {
+    const { user, loading: authLoading } = useAuth();
     const [featuredComponents, setFeaturedComponents] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        loadFeaturedComponents();
+        if (!authLoading && user) {
+            navigate(user.role === 'ADMIN' ? '/admin/dashboard' : '/dashboard');
+        }
+    }, [user, authLoading, navigate]);
+
+    useEffect(() => {
+        loadPublishedComponents();
     }, []);
 
-    const loadFeaturedComponents = async () => {
+    const loadPublishedComponents = async () => {
         try {
-            const data = await publicService.getComponents({ isFeatured: true, limit: 6 });
+            // Fetch components without the 'isFeatured' filter to show all "Approved" (Published) assets
+            const data = await publicService.getComponents({ status: 'published', limit: 12 });
             setFeaturedComponents(data.components || data);
         } catch (error) {
-            console.error('Error loading featured components:', error);
+            console.error('Error loading components:', error);
         } finally {
             setLoading(false);
         }

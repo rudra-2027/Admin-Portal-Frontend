@@ -7,18 +7,14 @@ const GuestRoute = ({ children }) => {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"></div>
+            <div className="min-h-screen flex items-center justify-center bg-slate-50">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
             </div>
         );
     }
 
     if (user) {
-        // Redirect to appropriate dashboard based on role
-        if (user.role === 'ADMIN') {
-            return <Navigate to="/admin/dashboard" replace />;
-        }
-        return <Navigate to="/dashboard" replace />;
+        return <Navigate to={user.role === 'ADMIN' ? '/admin/dashboard' : '/dashboard'} replace />;
     }
 
     return children;
