@@ -62,7 +62,7 @@ export const ToastProvider = ({ children }) => {
             {children}
 
             {/* Toast Container */}
-            <div className="fixed top-6 right-6 z-[100] space-y-4">
+            <div className="fixed top-6 right-6 z-[9999] space-y-4">
                 <AnimatePresence>
                     {toasts.map((toast) => (
                         <Toast

@@ -98,7 +98,10 @@ const CreateComponent = () => {
 
                 <div className="flex justify-center w-full">
                     {/* FORM SECTION */}
-                    <form className="w-full space-y-12">
+                    <form
+                        onSubmit={(e) => e.preventDefault()}
+                        className="w-full space-y-12"
+                    >
 
                         {/* BASIC INFORMATION */}
                         <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-10 space-y-8">

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { adminService } from '../../services/adminService';
 import { useToast } from '../../components/ui/Toast';
 import Modal from '../../components/ui/Modal';
+import ConfirmationModal from '../../components/ui/ConfirmationModal';
 import Input from '../../components/ui/Input';
 import Loader from '../../components/ui/Loader';
 import {
@@ -27,6 +28,7 @@ const UserManagement = () => {
         password: '',
         role: 'CONTRIBUTOR'
     });
+    const [confirmModal, setConfirmModal] = useState({ isOpen: false, type: 'danger', title: '', message: '', onConfirm: () => { } });
     const toast = useToast();
 
     useEffect(() => {
@@ -67,16 +69,23 @@ const UserManagement = () => {
         }
     };
 
-    const handleDeleteUser = async (userId) => {
-        if (!confirm('Are you sure you want to delete this user?')) return;
-
-        try {
-            await adminService.deleteUser(userId);
-            toast.success('User deleted successfully');
-            loadUsers();
-        } catch (error) {
-            toast.error('Failed to delete user');
-        }
+    const handleDeleteUser = (userId) => {
+        setConfirmModal({
+            isOpen: true,
+            type: 'danger',
+            title: 'Delete User Account?',
+            message: 'Are you sure you want to delete this user? This action cannot be undone and the user will lose all access.',
+            confirmText: 'Delete User',
+            onConfirm: async () => {
+                try {
+                    await adminService.deleteUser(userId);
+                    toast.success('User deleted successfully');
+                    loadUsers();
+                } catch (error) {
+                    toast.error('Failed to delete user');
+                }
+            }
+        });
     };
 
     if (loading) return <Loader fullScreen />;
@@ -213,6 +222,12 @@ const UserManagement = () => {
                         </table>
                     </div>
                 </div>
+
+                {/* CONFIRMATION MODAL */}
+                <ConfirmationModal
+                    {...confirmModal}
+                    onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+                />
             </div>
 
             {/* MODAL STYLING FIX */}
