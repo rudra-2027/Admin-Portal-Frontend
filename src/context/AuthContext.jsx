@@ -22,6 +22,18 @@ export const AuthProvider = ({ children }) => {
             setUser(currentUser);
         }
         setLoading(false);
+
+        // Listen for 401 events from api interceptor
+        const handleUnauthorized = () => {
+            setUser(null);
+            authService.logout(); // Ensure storage is cleared
+        };
+
+        window.addEventListener('auth:unauthorized', handleUnauthorized);
+
+        return () => {
+            window.removeEventListener('auth:unauthorized', handleUnauthorized);
+        };
     }, []);
 
     const login = async (username, password) => {

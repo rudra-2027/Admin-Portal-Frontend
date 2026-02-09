@@ -49,11 +49,14 @@ api.interceptors.response.use(
                 originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
                 return api(originalRequest);
             } catch (refreshError) {
-                // Refresh failed, clear tokens and redirect to login
+                // Refresh failed, clear tokens and dispatch event for smooth logout
                 localStorage.removeItem('accessToken');
                 localStorage.removeItem('refreshToken');
                 localStorage.removeItem('user');
-                window.location.href = '/login';
+
+                // Dispatch event so AuthContext can handle redirect without full reload
+                window.dispatchEvent(new Event('auth:unauthorized'));
+
                 return Promise.reject(refreshError);
             }
         }

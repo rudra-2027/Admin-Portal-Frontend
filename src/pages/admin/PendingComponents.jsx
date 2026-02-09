@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { adminService } from '../../services/adminService';
 import { useToast } from '../../components/ui/Toast';
 import Loader from '../../components/ui/Loader';
+import ConfirmationModal from '../../components/ui/ConfirmationModal';
 import { formatDate } from '../../utils/formatters';
 import {
     FiCheck,
@@ -19,6 +20,7 @@ import {
 const PendingComponents = () => {
     const [components, setComponents] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [confirmModal, setConfirmModal] = useState({ isOpen: false, type: 'danger', title: '', message: '', onConfirm: () => { } });
     const toast = useToast();
 
     useEffect(() => {
@@ -46,16 +48,23 @@ const PendingComponents = () => {
         }
     };
 
-    const handleReject = async (id) => {
-        if (!confirm('Are you sure you want to reject this component?')) return;
-
-        try {
-            await adminService.updateComponentStatus(id, 'rejected');
-            toast.success('Component rejected');
-            loadPendingComponents();
-        } catch (error) {
-            toast.error('Failed to reject component');
-        }
+    const handleReject = (id) => {
+        setConfirmModal({
+            isOpen: true,
+            type: 'danger',
+            title: 'Reject Submission?',
+            message: 'Are you sure you want to reject this component? The author will need to make corrections before resubmitting.',
+            confirmText: 'Reject Component',
+            onConfirm: async () => {
+                try {
+                    await adminService.updateComponentStatus(id, 'rejected');
+                    toast.success('Component rejected');
+                    loadPendingComponents();
+                } catch (error) {
+                    toast.error('Failed to reject component');
+                }
+            }
+        });
     };
 
     if (loading) return <Loader fullScreen />;
@@ -209,6 +218,12 @@ const PendingComponents = () => {
                         </div>
                     )}
                 </AnimatePresence>
+
+                {/* CONFIRMATION MODAL */}
+                <ConfirmationModal
+                    {...confirmModal}
+                    onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+                />
             </div>
         </main>
     );
